@@ -36,18 +36,17 @@ public class FileUtilities {
         }
     }
 
-    public static File getFileDirectory(Context context){
-        String storageType = StorageType.INTERNAL;
-        if (storageType.equals(StorageType.INTERNAL)){
+    public static File getFileDirectory(Context context) {
+        MemeMakerApplicationSettings settings = new MemeMakerApplicationSettings(context);
+        String storageType = settings.getStoragePreference();
+        if (storageType.equals(StorageType.INTERNAL)) {
             return context.getFilesDir();
-        }else{
-            if (isExternalStorageAvailable()){
-                if(storageType.equals(StorageType.PRIVATE_EXTERNAL)){
-                    return context.getExternalFilesDir(null);
-                }else{
-                    return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                }
-            }else {
+        } else {
+            if (isExternalStorageAvailable()) {
+                return (storageType.equals(StorageType.PRIVATE_EXTERNAL)) ?
+                        context.getExternalFilesDir(null) :
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            } else {
                 return context.getFilesDir();
             }
         }
@@ -58,17 +57,17 @@ public class FileUtilities {
         return (Environment.MEDIA_MOUNTED.equals(state));
     }
 
-    private static void copyFile(InputStream in, OutputStream out) throws IOException{
+    private static void copyFile(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
         int read;
-        while ((read = in.read(buffer)) != -1){
+        while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
         }
     }
 
-    public static File[] listFiles(Context context){
+    public static File[] listFiles(Context context) {
         File fileDirectory = getFileDirectory(context);
-        File[] filteredFiles= fileDirectory.listFiles(new FileFilter() {
+        File[] filteredFiles = fileDirectory.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
                 return file.getAbsolutePath().contains(".jpg");
